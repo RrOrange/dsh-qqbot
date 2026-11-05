@@ -4,6 +4,8 @@
 > 在保留上游全部功能的前提下，修了一批出站与流式的问题，并重做了设置面板的部分 UI；逐条说明见 [CHANGELOG.md](./CHANGELOG.md)。
 >
 > 上游文档、截图与命令说明仍然适用 —— 阅读顺序：本说明 → [用户手册](./docs/USER-GUIDE.md) → 上游 README。
+>
+> 📦 **本仓库**：<https://github.com/RrOrange/dsh-qqbot>（在 npm 发布版 1.11.36 上直接维护，带 `dist/`，克隆即可运行）。
 
 > **为什么仓库里会提交 `dist/`？**
 >
@@ -495,55 +497,50 @@ env.user / env.owners / env.peer · env.log() · env.kernel（全权限遥控器
 > 这一个包内——装完它，dsh Web「设置」里就会出现「QQ 机器人 (im-qqbot)」面板（多账号时每个实例各一页），
 > **无需再单独安装 dsh-qqbot-settings**。
 
-### 方式一（发布到 npm 后）：一条命令
+### 方式一：从 GitHub 直装（本仓库已带 `dist/`，无编译步骤）
 
 ```powershell
-npx @deepseek-ai/dsh plugin --profile web add @zaofan/dsh-qqbot
+npx @deepseek-ai/dsh plugin --profile web add github:RrOrange/dsh-qqbot
 ```
 
-> 尚未发布到 npm 前，请用下面的方式二。
-
-> ⚠️ **从 GitHub 直装（`github:zaofan-make/dsh-qqbot`）需要编译产物 `dist/`，而仓库不提交 `dist`。**
-> 包已声明 `prepare` 脚本，pnpm 安装时会自动编译；
-> 若你的包管理器没自动跑（或报 `failed to import` / 找不到 `dist/index.js`），
-> 手动在插件目录执行一次 `npm run build` 即可。**最省事的做法是用 npm 上的发布版**（`@zaofan/dsh-qqbot`）。
-
-### 方式二：源码分发（当前推荐）
-
-**Windows（一键脚本）**：
+本地已有 clone 时按路径装（`add` 接受目录）：
 
 ```powershell
-git clone https://github.com/zaofan-make/dsh-qqbot.git
-cd dsh-qqbot
-.\install.ps1          # 自动 install/build → pack → add tarball → 输出重启指引
+git clone https://github.com/RrOrange/dsh-qqbot.git
+npx @deepseek-ai/dsh plugin --profile web add .\dsh-qqbot
 ```
 
-> 若系统禁止运行脚本，改用：`powershell -ExecutionPolicy Bypass -File .\install.ps1`
+> 装完重启 `dsh web`；设置面板在 **设置 → QQ 机器人**（需要 `web` profile，见上方警告）。
 
-**macOS / Linux（手动）**：
+### 方式二：打 tarball 安装（最稳，跨平台一致）
+
+`add` 直接指目录时，Windows 路径含空格会被拆碎（pnpm 报 `- isn't supported`），且 link 方式下插件无法按代码位置反推 profile（扫码凭据落不了盘）。所以更稳的是打一次 tarball 再装：
+
+```powershell
+git clone https://github.com/RrOrange/dsh-qqbot.git
+cd dsh-qqbot
+pnpm pack --pack-destination .
+npx @deepseek-ai/dsh plugin --profile web add .\zaofan-dsh-qqbot-1.11.36.tgz
+```
+
+### 关于「构建」
+
+**本仓库没有构建步骤**：`dist/*.js`、`client/qqbot-settings.js`、`settings-host.js` 都是可直接运行的手改产物，`npm run build`（tsc）在这里没有 `src/` 可编译，请忽略它。
+
+改完代码后的自检：
 
 ```bash
-git clone https://github.com/zaofan-make/dsh-qqbot.git
-cd dsh-qqbot
-npm install && npm run build
-pnpm pack --pack-destination /tmp
-npx @deepseek-ai/dsh plugin --profile web add /tmp/zaofan-dsh-qqbot-0.4.0.tgz
+node --check dist/index.js      # 以及每个改到的 dist/*.js
+pnpm run check:package          # 单包四项家当是否齐全（可选）
 ```
 
-> 💡 为什么打 tarball、而不是 `add` 源码目录？实测教训：
-> ① 目录路径含空格时 Windows 会把参数在空格处拆碎（pnpm 报 `- isn't supported`）；
-> ② `add` 目录 = pnpm link(junction)，插件无法按"代码位置"反推 profile → 扫码凭据落不了盘，只能走环境变量。
+### 开发参考资料
 
-### 构建与部署（源码）
+- DSH 插件开发文档：<https://deepseek-harness.github.io/deepseek-harness/develop/basic/>
+- 插件生命周期 / 服务 / 事件：`/develop/cordis-tutorial/01-first-plugin` ~ `07-into-the-harness`
+- QQ 开放平台（消息、富媒体、流式、群管理 API）：<https://bot.q.qq.com/wiki/>
 
-```bash
-npm install                 # 安装依赖（peer 依赖由 dsh 宿主解析）
-npm run build               # 或: node node_modules/typescript/lib/tsc.js -p tsconfig.json
-npm run check:package       # 发布前自检(单包四项家当齐全)
-pnpm pack                   # 打 tarball(供 dsh plugin add 安装)
-```
 
-仓库根的 `install.ps1` 提供 Windows 一键安装（自动 pack 到无空格目录 → add → 重启提示）。
 
 ### 排障: npm 安装报 ERESOLVE(2026-09-06 移植上游 PR #42)
 
