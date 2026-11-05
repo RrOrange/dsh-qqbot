@@ -12,8 +12,11 @@
 git clone https://github.com/RrOrange/dsh-qqbot.git
 cd dsh-qqbot
 pnpm pack --pack-destination .
-npx @deepseek-ai/dsh plugin --profile web add .\zaofan-dsh-qqbot-1.11.36.tgz
+$tgz = (Get-ChildItem *.tgz).FullName
+npx @deepseek-ai/dsh plugin --profile web add $tgz
 ```
+
+打包出来的文件名不用记：它由 `package.json` 里的 `name` + `version` 决定（本项目原名 `@zaofan/dsh-qqbot`，所以叫 `zaofan-dsh-qqbot-<版本>.tgz`）。上面的 `$tgz` 直接取目录里那个 `.tgz`，改名也不影响安装。
 
 然后重启 `dsh web`。也可以直接 `dsh plugin --profile web add github:RrOrange/dsh-qqbot`。
 
@@ -32,6 +35,7 @@ npx @deepseek-ai/dsh plugin --profile web add .\zaofan-dsh-qqbot-1.11.36.tgz
 2. 进目录执行：pnpm pack --pack-destination .
    注意：这个仓库的 dist/ 是随包提交的，不要执行 npm run build（它没有 src/，build 会失败）。
 3. 执行：npx @deepseek-ai/dsh plugin --profile web add <第 2 步产出的 .tgz 绝对路径>
+   （文件名由 package.json 的 name+version 决定，别写死；用 (Get-ChildItem *.tgz).FullName 取就行）
    Windows 上不要把带空格的目录直接 add（会报 "- isn't supported"），一定要先 pack 再 add。
 4. 装完提醒我重启 `dsh web`（dist 改动需要重启才生效）。
 5. 重启后帮我确认：dsh Web 的「设置」里是否出现「QQ 机器人」面板。
