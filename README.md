@@ -1,4 +1,4 @@
-# dsh-qqbot（个人修改版）
+# dsh-qqbot
 
 把 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness)（dsh）接到 QQ 上的插件：群里能聊、能发图/文件、有定时任务、有多人格、有可视化设置面板。
 
@@ -19,6 +19,29 @@ npx @deepseek-ai/dsh plugin --profile web add .\zaofan-dsh-qqbot-1.11.36.tgz
 
 **没有构建步骤**：`dist/` 是随包提交的（这份 fork 没有 `src/`），`npm run build` 请忽略。
 
+## 懒得动手？把这段话丢给 AI
+
+不用手敲命令的话，把下面整段复制，发给你的 AI 助手（Claude Code / Cursor / dsh 自带的 agent 都行），它会把安装和验证跑完：
+
+```text
+帮我把这个 DSH 插件装好并验证：https://github.com/RrOrange/dsh-qqbot
+
+请按下面的步骤做，每步做完告诉我结果：
+
+1. 克隆到 ~/Documents/dsh-qqbot（已存在就先 git pull）。
+2. 进目录执行：pnpm pack --pack-destination .
+   注意：这个仓库的 dist/ 是随包提交的，不要执行 npm run build（它没有 src/，build 会失败）。
+3. 执行：npx @deepseek-ai/dsh plugin --profile web add <第 2 步产出的 .tgz 绝对路径>
+   Windows 上不要把带空格的目录直接 add（会报 "- isn't supported"），一定要先 pack 再 add。
+4. 装完提醒我重启 `dsh web`（dist 改动需要重启才生效）。
+5. 重启后帮我确认：dsh Web 的「设置」里是否出现「QQ 机器人」面板。
+   如果没有，把插件的加载报错原文贴给我，不要自己猜。
+6. 如果我还缺 QQ 机器人的 AppID/AppSecret，告诉我先去 https://q.qq.com 注册一个，
+   并说明拿到之后在面板的哪一栏填。
+
+遇到报错就停下来，把原始报错贴给我，不要跳过。
+```
+
 ## 怎么用
 
 - 设置面板：**设置 → QQ 机器人**（多账号时每个实例一页；必须在 `web` profile 下才有面板）
@@ -34,11 +57,6 @@ npx @deepseek-ai/dsh plugin --profile web add .\zaofan-dsh-qqbot-1.11.36.tgz
 - **事件订阅补全**：机器人被移出群、对方关闭主动消息，现在能感知并提示。
 - **设置面板**：搜索框合一（字面+语义）、保存条吸底、顶部标签吸顶、「账号与预设」页重做、删掉冗余的「怎么用 / 定时唤醒 / 扩展示例」。
 - 另有一批内存泄漏、时区硬编码、定时任务漏触发之类的杂项修复。
-
-## 两个最容易踩的坑
-
-1. **群里不理人**：多半是平台侧的「群聊消息范围」还停在“仅 @ 机器人”。去 手机 QQ → 群 → 机器人头像 → 设置 里放开。
-2. **装了看不到界面**：装到非 `web` profile 了。设置面板只在 `web` profile 下渲染。
 
 ## 目录
 
