@@ -13,12 +13,15 @@ git clone https://github.com/RrOrange/dsh-qqbot.git
 cd dsh-qqbot
 pnpm pack --pack-destination .
 $tgz = (Get-ChildItem *.tgz).FullName
-npx @deepseek-ai/dsh plugin --profile web add $tgz
+npx @deepseek-ai/dsh plugin --profile desktop add $tgz   # 桌面客户端
+# npx @deepseek-ai/dsh plugin --profile web add $tgz     # dsh web（网页版）
 ```
+
+`--profile` 写你实际在用的那个：就是 `%USERPROFILE%\.dsh\profiles\` 下的文件夹名 —— 桌面客户端一般叫 `desktop`，`dsh web` 一般叫 `web`。装错 profile 的表现是「重启后设置里没有 QQ 机器人面板」。
 
 打包出来的文件名不用记：它由 `package.json` 里的 `name` + `version` 决定（本项目原名 `@zaofan/dsh-qqbot`，所以叫 `zaofan-dsh-qqbot-<版本>.tgz`）。上面的 `$tgz` 直接取目录里那个 `.tgz`，改名也不影响安装。
 
-然后重启 `dsh web`。也可以直接 `dsh plugin --profile web add github:RrOrange/dsh-qqbot`。
+然后重启 dsh：跑 `dsh web` 的就重启那个进程，桌面客户端退出重开。也可以直接 `dsh plugin --profile <你的profile> add github:RrOrange/dsh-qqbot`。
 
 **没有构建步骤**：`dist/` 是随包提交的（这份 fork 没有 `src/`），`npm run build` 请忽略。
 
@@ -31,16 +34,18 @@ npx @deepseek-ai/dsh plugin --profile web add $tgz
 
 请按下面的步骤做，每步做完告诉我结果：
 
-1. 克隆到 ~/Documents/dsh-qqbot（已存在就先 git pull）。
-2. 进目录执行：pnpm pack --pack-destination .
+1. 先确认我在用哪个 dsh：桌面客户端还是 `dsh web`。然后把 ~/.dsh/profiles/ 下的文件夹名告诉我
+   （桌面客户端通常是 desktop，dsh web 通常是 web），后面用这个名字当 --profile 的值。
+2. 克隆到 ~/Documents/dsh-qqbot（已存在就先 git pull）。
+3. 进目录执行：pnpm pack --pack-destination .
    注意：这个仓库的 dist/ 是随包提交的，不要执行 npm run build（它没有 src/，build 会失败）。
-3. 执行：npx @deepseek-ai/dsh plugin --profile web add <第 2 步产出的 .tgz 绝对路径>
+4. 执行：npx @deepseek-ai/dsh plugin --profile <第 1 步得到的 profile 名> add <上一步产出的 .tgz 绝对路径>
    （文件名由 package.json 的 name+version 决定，别写死；用 (Get-ChildItem *.tgz).FullName 取就行）
    Windows 上不要把带空格的目录直接 add（会报 "- isn't supported"），一定要先 pack 再 add。
-4. 装完提醒我重启 `dsh web`（dist 改动需要重启才生效）。
-5. 重启后帮我确认：dsh Web 的「设置」里是否出现「QQ 机器人」面板。
+5. 装完提醒我重启 dsh：跑 `dsh web` 的重启那个进程，桌面客户端退出重开（dist 改动必须重启才生效）。
+6. 重启后帮我确认：dsh 的「设置」里是否出现「QQ 机器人」面板。
    如果没有，把插件的加载报错原文贴给我，不要自己猜。
-6. 如果我还缺 QQ 机器人的 AppID/AppSecret，告诉我先去 https://q.qq.com 注册一个，
+7. 如果我还缺 QQ 机器人的 AppID/AppSecret，告诉我先去 https://q.qq.com 注册一个，
    并说明拿到之后在面板的哪一栏填。
 
 遇到报错就停下来，把原始报错贴给我，不要跳过。
