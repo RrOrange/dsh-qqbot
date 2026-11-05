@@ -5,6 +5,14 @@
 >
 > 上游文档、截图与命令说明仍然适用 —— 阅读顺序：本说明 → [用户手册](./docs/USER-GUIDE.md) → 上游 README。
 
+> **为什么仓库里会提交 `dist/`？**
+>
+> 上游 [tencent-connect/dsh-qqbot](https://github.com/tencent-connect/dsh-qqbot) 是 TypeScript 源码仓库（`src/*.ts` + `tsc` 构建），`dist/` 是编译产物、不提交，只在发布 npm 包时带上。
+>
+> 本仓库是**在 npm 已发布版本（1.11.36）的编译产物上直接维护**的 fork：没有 `src/`，`dist/*.js` 就是唯一的源码；`client/qqbot-settings.js`（设置面板，单文件手写 bundle）和 `settings-host.js`（设置页 HTTP 路由）同样是手改的成品文件。所以 **`dist/` 必须提交** —— 否则装出来只有 `entry.js` 空壳，入口自检会直接报 `dist/index.js` 缺失。
+>
+> 代价是改动无法回到上游的 `src/` 工作流、diff 不如 TS 源码易读；好处是能从 GitHub 直接安装，不需要本地构建。
+
 # @zaofan/dsh-qqbot
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE) ![Platform](https://img.shields.io/badge/platform-QQ%20Bot%20(dsh)-blue)
